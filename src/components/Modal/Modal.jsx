@@ -1,44 +1,41 @@
 import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { Overlay, ModalWrap } from './Modal.styled';
 
-export default class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.onKeyPress);
-    // без setInterval при відкритті модалки приходить подія mouseClick і модалка закриється,
-    // може підкажете рішення краще, це виглядає дуже костильно
-    setTimeout(() => {
-      window.addEventListener('click', this.onClick);
-    }, 0);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onKeyPress);
-    window.removeEventListener('click', this.onClick);
-  }
-  onKeyPress = e => {
+export default function Modal({
+  modalImg: { largeImageURL, tags },
+  closeModal,
+}) {
+  const onKeyPress = e => {
     if (e.key && e.key === 'Escape') {
-      this.props.closeModal();
+      closeModal();
     }
   };
-  onClick = e => {
+  const onClick = e => {
     const modalRef = document.querySelector('.Modal');
     if (e.target.closest('.Modal') !== modalRef) {
-      this.props.closeModal();
+      closeModal();
     }
   };
-  render() {
-    const {
-      modalImg: { largeImageURL, tags },
-    } = this.props;
-    return (
-      <Overlay>
-        <ModalWrap className="Modal">
-          <img src={largeImageURL} alt={tags} />
-        </ModalWrap>
-      </Overlay>
-    );
-  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyPress);
+    setTimeout(() => {
+      window.addEventListener('click', onClick);
+    }, 0);
+    return () => {
+      window.removeEventListener('keydown', onKeyPress);
+      window.removeEventListener('click', onClick);
+    };
+  }, []);
+
+  return (
+    <Overlay>
+      <ModalWrap className="Modal">
+        <img src={largeImageURL} alt={tags} />
+      </ModalWrap>
+    </Overlay>
+  );
 }
 
 Modal.propTypes = {
