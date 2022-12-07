@@ -6,28 +6,30 @@ export default function Modal({
   modalImg: { largeImageURL, tags },
   closeModal,
 }) {
-  const onKeyPress = e => {
-    if (e.key && e.key === 'Escape') {
-      closeModal();
-    }
-  };
-  const onClick = e => {
-    const modalRef = document.querySelector('.Modal');
-    if (e.target.closest('.Modal') !== modalRef) {
-      closeModal();
-    }
-  };
-
   useEffect(() => {
+    const onKeyPress = e => {
+      if (e.key && e.key === 'Escape') {
+        closeModal();
+      }
+    };
+    const onClick = e => {
+      const modalRef = document.querySelector('.Modal');
+      if (e.target.closest('.Modal') !== modalRef) {
+        closeModal();
+      }
+    };
+    //Без цих таймаутів не працює, де я щось пропустив?
     window.addEventListener('keydown', onKeyPress);
     setTimeout(() => {
       window.addEventListener('click', onClick);
     }, 0);
     return () => {
-      window.removeEventListener('keydown', onKeyPress);
-      window.removeEventListener('click', onClick);
+      setTimeout(() => {
+        window.removeEventListener('keydown', onKeyPress);
+        window.removeEventListener('click', onClick);
+      }, 0);
     };
-  }, []);
+  }, [closeModal]);
 
   return (
     <Overlay>
