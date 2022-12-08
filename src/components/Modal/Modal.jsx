@@ -8,31 +8,25 @@ export default function Modal({
 }) {
   useEffect(() => {
     const onKeyPress = e => {
-      if (e.key && e.key === 'Escape') {
+      if (e.key === 'Escape') {
         closeModal();
       }
     };
-    const onClick = e => {
-      const modalRef = document.querySelector('.Modal');
-      if (e.target.closest('.Modal') !== modalRef) {
-        closeModal();
-      }
-    };
-    //Без цих таймаутів не працює, де я щось пропустив?
+
     window.addEventListener('keydown', onKeyPress);
-    setTimeout(() => {
-      window.addEventListener('click', onClick);
-    }, 0);
     return () => {
-      setTimeout(() => {
-        window.removeEventListener('keydown', onKeyPress);
-        window.removeEventListener('click', onClick);
-      }, 0);
+      window.removeEventListener('keydown', onKeyPress);
     };
   }, [closeModal]);
 
+  const onClick = e => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
+  };
+
   return (
-    <Overlay>
+    <Overlay onClick={onClick}>
       <ModalWrap className="Modal">
         <img src={largeImageURL} alt={tags} />
       </ModalWrap>

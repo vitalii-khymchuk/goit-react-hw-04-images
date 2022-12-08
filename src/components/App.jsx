@@ -56,35 +56,32 @@ export function App() {
     }, 0);
   }, [currentPage]);
 
+  const onSubmit = query => {
+    setState({ type: 'resetState' });
+    setState({ type: 'saveQuery', payload: query });
+  };
+
+  const addLargeImgToState = url =>
+    setState({ type: 'setModalImg', payload: url });
+
+  const onLoadMoreClick = () => setState({ type: 'incrementPage' });
+
+  const closeModal = () => setState({ type: 'resetModalImg' });
+
   return (
     <>
-      <Searchbar
-        onSubmit={query => {
-          setState({ type: 'resetState' });
-          setState({ type: 'saveQuery', payload: query });
-        }}
-      />
+      <Searchbar onSubmit={onSubmit} />
       {!!images.length && (
-        <ImageGallery
-          images={images}
-          addLargeImgToState={url =>
-            setState({ type: 'setModalImg', payload: url })
-          }
-        />
+        <ImageGallery images={images} addLargeImgToState={addLargeImgToState} />
       )}
       {status === 'pending' && <Loader />}
       {status === 'resolved' && (
         <>
           {totalPages > 1 && currentPage < totalPages && (
-            <Button
-              onLoadMoreClick={() => setState({ type: 'incrementPage' })}
-            />
+            <Button onLoadMoreClick={onLoadMoreClick} />
           )}
           {modalImg.largeImageURL && (
-            <Modal
-              modalImg={modalImg}
-              closeModal={() => setState({ type: 'resetModalImg' })}
-            />
+            <Modal modalImg={modalImg} closeModal={closeModal} />
           )}
         </>
       )}
